@@ -4,7 +4,7 @@ function Navbar() {
   return (
     <nav style={{
       padding: "1rem",
-      background: "#333",
+      backgroundColor: "#333",
       display: "flex",
       justifyContent: "space-around",
       color: "white"
