@@ -1,146 +1,113 @@
+// Search.jsx
 import React, { useState } from 'react';
-import { BiSearch, BiUserCircle } from 'react-icons/bi';
+import { BiSearch, BiUserCircle, BiMap, BiGitRepoForked } from 'react-icons/bi';
 import { fetchUserData } from '../services/githubService';
 import GitHubUserCard from './GithubUserCard';
 
 const Search = () => {
-    const [username, setUsername] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [message, setMessage] = useState('');
-    const [user, setGhUser] = useState(null); // Use null instead of []
+  const [formData, setFormData] = useState({
+    username: '',
+    location: '',
+    minRepos: ''
+  });
 
-    const fetchData = async (e) => {
-        e.preventDefault();
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  const [results, setResults] = useState([]);
 
-        // Reset state
-        setMessage('');
-        setGhUser(null);
+  const handleChange = (e) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
-        if (!username.trim()) {
-            setMessage('Username cannot be empty');
-            return;
-        }
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    setMessage('');
+    setResults([]);
+    setLoading(true);
 
-        setLoading(true);
+    try {
+      const users = await fetchUserData(formData);
+      if (users.length === 0) {
+        setMessage('Looks like we cant find the user');
+      } else {
+        setResults(users);
+      }
+    } catch (err) {
+      console.error(err);
+      setMessage('Error fetching users.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        try {
-            const data = await fetchUserData({ username });
+  return (
+    <div className="max-w-2xl mx-auto p-4 mt-10 h-full">
+      <form onSubmit={handleSearch} className="bg-white p-6 rounded-xl shadow space-y-4">
+        {message && (
+          <div className="bg-red-100 text-red-700 px-4 py-2 rounded">
+            {message}
+          </div>
+        )}
 
-            if (!data || data.message === 'Not Found') {
-                setMessage('GitHub user not found');
-                setGhUser(null);
-            } else {
-                setGhUser(data);
-                setMessage('');
-            }
-        } catch (error) {
-            console.error(error);
-            setMessage('An error occurred while fetching data');
-        } finally {
-            setLoading(false);
-            setUsername('');
-        }
-    };
-
-    return (
-        <div className="w-full max-w-xl mx-auto mt-10 px-4 h-screen">
-            <form onSubmit={fetchData} className="bg-white rounded-xl shadow p-6">
-                <div className="form-group">
-                    {message && (
-                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4">
-                            {message}
-                        </div>
-                    )}
-
-                    <label htmlFor="username">
-                        <div className="flex items-center gap-2 text-gray-700 font-medium mb-1">
-                            <BiUserCircle className="text-orange-500" size={24} />
-                            <span>GitHub Username</span>
-                        </div>
-                    </label>
-
-                    <input
-                        id="username"
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        placeholder="e.g. octocat"
-                        className="w-full border rounded-md px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                    />
-
-                    <button
-                        type="submit"
-                        className="w-full bg-blue-900 text-white py-2 rounded-md flex items-center justify-center gap-2 hover:bg-blue-800 transition"
-                        disabled={loading}
-                    >
-                        <BiSearch size={20} />
-                        <span>{loading ? 'Searching...' : 'Search'}</span>
-                    </button>
-                </div>
-            </form>
-
-            {user && (
-                user.length==0?(
-                    <div>
-                        <span>Looks like we cant find the user</span>
-                    </div>
-                ):(<div className="mt-6">
-                    <div className="max-w-sm mx-auto bg-white dark:bg-gray-800 shadow-lg rounded-xl overflow-hidden hover:shadow-2xl transition-shadow duration-300">
-                        <div className="p-6 text-center">
-                            <img
-                                src={user.avatar_url}
-                                alt="Avatar"
-                                className="w-24 h-24 rounded-full mx-auto border-4 border-indigo-500"
-                            />
-                            <h2 className="mt-4 text-xl font-semibold text-gray-800 dark:text-white">
-                                {user.name || user.login}
-                            </h2>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
-                                @{user.login}
-                            </p>
-
-                            {user.bio && (
-                                <p className="mt-3 text-gray-600 dark:text-gray-300 text-sm">
-                                    {user.bio}
-                                </p>
-                            )}
-
-                            <div className="mt-4 flex justify-center gap-4 text-sm text-gray-600 dark:text-gray-300">
-                                <div>
-                                    <span className="font-bold">{user.public_repos}</span>
-                                    <span className="block">Repos</span>
-                                </div>
-                                <div>
-                                    <span className="font-bold">{user.followers}</span>
-                                    <span className="block">Followers</span>
-                                </div>
-                                <div>
-                                    <span className="font-bold">{user.following}</span>
-                                    <span className="block">Following</span>
-                                </div>
-                            </div>
-
-                            {user.location && (
-                                <div className="mt-4 text-gray-500 dark:text-gray-400 text-sm">
-                                    📍 {user.location}
-                                </div>
-                            )}
-
-                            <a
-                                href={user.html_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="mt-5 inline-block bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition-colors duration-200"
-                            >
-                                View Profile
-                            </a>
-                        </div>
-                    </div>
-                </div>)
-                
-            )}
+        <div>
+          <label className="flex items-center gap-2 mb-1 text-gray-700">
+            <BiUserCircle /> Username (optional)
+          </label>
+          <input
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            placeholder="e.g. johndoe"
+            className="w-full border px-3 py-2 rounded"
+          />
         </div>
-    );
+
+        <div>
+          <label className="flex items-center gap-2 mb-1 text-gray-700">
+            <BiMap /> Location
+          </label>
+          <input
+            name="location"
+            value={formData.location}
+            onChange={handleChange}
+            placeholder="e.g. Nairobi"
+            className="w-full border px-3 py-2 rounded"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="flex items-center gap-2 mb-1 text-gray-700">
+            <BiGitRepoForked /> Minimum Repositories
+          </label>
+          <input
+            type="number"
+            name="minRepos"
+            value={formData.minRepos}
+            onChange={handleChange}
+            placeholder="e.g. 5"
+            className="w-full border px-3 py-2 rounded"
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-blue-900 text-white py-2 rounded hover:bg-blue-800 transition"
+        >
+          {loading ? 'Searching...' : 'Advanced Search'}
+        </button>
+      </form>
+
+      {results.length > 0 && (
+        <div className="mt-8 space-y-4">
+          {results.map((user) => (
+            <GitHubUserCard key={user.id} user={user} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default Search;
