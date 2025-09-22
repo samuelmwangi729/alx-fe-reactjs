@@ -1,6 +1,4 @@
-import axios from 'axios'
 export const fetchUserData = async ({ username, location, minRepos }) => {
-    console.log('fetching the data')
      let query = '';
 
   if (username) query += `${username} in:login `;

@@ -33,7 +33,6 @@ const Search = () => {
         setResults(users);
       }
     } catch (err) {
-      console.error(err);
       setMessage('Error fetching users.');
     } finally {
       setLoading(false);
