@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BiSearch, BiUserCircle } from 'react-icons/bi';
-import { fetchuserData } from '../services/githubService';
+import { fetchUserData } from '../services/githubService';
 import GitHubUserCard from './GithubUserCard';
 
 const Search = () => {
@@ -24,7 +24,7 @@ const Search = () => {
     setLoading(true);
 
     try {
-      const data = await fetchuserData({ username });
+      const data = await fetchUserData({ username });
 
       if (!data || data.message === 'Not Found') {
         setMessage('GitHub user not found');

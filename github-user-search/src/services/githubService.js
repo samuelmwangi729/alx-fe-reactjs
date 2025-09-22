@@ -1,5 +1,5 @@
 import axios from 'axios'
-export const fetchuserData = async (data) => {
+export const fetchUserData = async (data) => {
     console.log('fetching the data')
     try {
         const endpoint = `https://api.github.com/users/${data.username}`
