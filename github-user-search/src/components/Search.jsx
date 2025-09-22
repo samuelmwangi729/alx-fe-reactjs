@@ -102,7 +102,12 @@ const Search = () => {
       {results.length > 0 && (
         <div className="mt-8 space-y-4">
           {results.map((user) => (
+            <>
             <GitHubUserCard key={user.id} user={user} />
+            <a href={user.html_url}>View Profile</a>
+
+            </>
+            
           ))}
         </div>
       )}
