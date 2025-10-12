@@ -6,26 +6,23 @@ const initialTodos = [
   { id: 2, text: 'Build a Todo App', completed: true },
 ];
 
-const TodoList = () => {
+export default function TodoList() {
   const [todos, setTodos] = useState(initialTodos);
 
   const addTodo = (text) => {
-    const newTodo = {
-      id: Date.now(),
-      text,
-      completed: false,
-    };
-    setTodos([...todos, newTodo]);
+    setTodos([...todos, { id: Date.now(), text, completed: false }]);
   };
 
   const toggleTodo = (id) => {
-    setTodos(todos.map(todo =>
-      todo.id === id ? { ...todo, completed: !todo.completed } : todo
-    ));
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
   };
 
   const deleteTodo = (id) => {
-    setTodos(todos.filter(todo => todo.id !== id));
+    setTodos(todos.filter((todo) => todo.id !== id));
   };
 
   return (
@@ -33,21 +30,24 @@ const TodoList = () => {
       <h2>Todo List</h2>
       <AddTodoForm onAddTodo={addTodo} />
       <ul data-testid="todo-list">
-        {todos.map(todo => (
+        {todos.map((todo) => (
           <li
             key={todo.id}
             onClick={() => toggleTodo(todo.id)}
             style={{
               textDecoration: todo.completed ? 'line-through' : 'none',
-              cursor: 'pointer'
+              cursor: 'pointer',
             }}
             data-testid="todo-item"
           >
             {todo.text}
-            <button onClick={(e) => {
-              e.stopPropagation(); // prevent toggle
-              deleteTodo(todo.id);
-            }} data-testid="delete-button">
+            <button
+              data-testid="delete-button"
+              onClick={(e) => {
+                e.stopPropagation();
+                deleteTodo(todo.id);
+              }}
+            >
               Delete
             </button>
           </li>
@@ -55,6 +55,4 @@ const TodoList = () => {
       </ul>
     </div>
   );
-};
-
-export default TodoList;
+}

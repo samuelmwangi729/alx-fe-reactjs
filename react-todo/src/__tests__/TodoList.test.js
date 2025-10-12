@@ -1,6 +1,7 @@
+import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import TodoList from '../components/TodoList';
 import '@testing-library/jest-dom';
+import TodoList from '../components/TodoList';
 
 describe('TodoList Component', () => {
   test('renders initial todos', () => {
@@ -34,9 +35,9 @@ describe('TodoList Component', () => {
   test('deletes a todo', () => {
     render(<TodoList />);
     const todoItem = screen.getByText(/Learn React/i);
-    const deleteButton = screen.getAllByTestId('delete-button')[0];
+    const deleteButtons = screen.getAllByTestId('delete-button');
 
-    fireEvent.click(deleteButton);
+    fireEvent.click(deleteButtons[0]);
     expect(todoItem).not.toBeInTheDocument();
   });
 });
