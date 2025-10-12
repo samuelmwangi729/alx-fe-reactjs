@@ -4,10 +4,11 @@ import {
   Route,
   Navigate,
 } from 'react-router-dom';
+
 import Home from './pages/Home';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
-import BlogPost from './pages/BlogPost';
+import BlogPost from './pages/BlogPost'; // make sure this exists
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -16,7 +17,6 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
 
-        {/* Protected Route Example */}
         <Route
           path="/profile/*"
           element={
@@ -26,12 +26,12 @@ function App() {
           }
         />
 
-        {/* Dynamic Route */}
-        <Route path="/blog/:postId" element={<BlogPost />} />
+        {/* ✅ Add this dynamic route */}
+        <Route path="/blog/:id" element={<BlogPost />} />
 
         <Route path="/login" element={<Login />} />
 
-        {/* Catch-all route */}
+        {/* Fallback route */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>

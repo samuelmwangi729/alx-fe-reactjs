@@ -1,12 +1,12 @@
 import { useParams } from 'react-router-dom';
 
 const BlogPost = () => {
-  const { postId } = useParams();
+  const { id } = useParams();
 
   return (
     <div>
-      <h2>Blog Post ID: {postId}</h2>
-      <p>This is the content for blog post #{postId}</p>
+      <h2>Blog Post ID: {id}</h2>
+      <p>Content for blog post #{id}</p>
     </div>
   );
 };
