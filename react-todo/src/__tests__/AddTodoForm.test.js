@@ -1,49 +1,54 @@
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
 import AddTodoForm from '../components/AddTodoForm';
+import '@testing-library/jest-dom';
 
-describe('AddTodoForm Component', () => {
-  test('renders input and button', () => {
-    render(<AddTodoForm onAddTodo={jest.fn()} />);
+// Test to check if AddTodoForm renders input and button
+test('renders AddTodoForm input and button', () => {
+  render(<AddTodoForm onAddTodo={() => {}} />);
+  // Verify input and button are rendered
+  expect(screen.getByTestId('todo-input')).toBeInTheDocument();
+  expect(screen.getByTestId('add-button')).toBeInTheDocument();
+});
 
-    const input = screen.getByTestId('todo-input');
-    const button = screen.getByTestId('add-button');
+// Test to check if input value changes as user types
+test('updates input value on change', () => {
+  render(<AddTodoForm onAddTodo={() => {}} />);
+  const input = screen.getByTestId('todo-input');
 
-    expect(input).toBeInTheDocument();
-    expect(button).toBeInTheDocument();
-  });
+  // Simulate typing in the input field
+  fireEvent.change(input, { target: { value: 'New Task' } });
 
-  test('allows typing into the input', () => {
-    render(<AddTodoForm onAddTodo={jest.fn()} />);
+  // Verify input has new value
+  expect(input.value).toBe('New Task');
+});
 
-    const input = screen.getByTestId('todo-input');
-    fireEvent.change(input, { target: { value: 'New Todo' } });
+// Test to check if onAddTodo is called on valid form submit
+test('calls onAddTodo on submit with valid input', () => {
+  const mockAddTodo = jest.fn();
+  render(<AddTodoForm onAddTodo={mockAddTodo} />);
+  const input = screen.getByTestId('todo-input');
+  const addButton = screen.getByTestId('add-button');
 
-    expect(input.value).toBe('New Todo');
-  });
+  // Enter a valid todo and submit
+  fireEvent.change(input, { target: { value: 'Write Unit Tests' } });
+  fireEvent.click(addButton);
 
-  test('calls onAddTodo when submitted with valid input', () => {
-    const mockAddTodo = jest.fn();
-    render(<AddTodoForm onAddTodo={mockAddTodo} />);
+  // Verify callback is called with correct input
+  expect(mockAddTodo).toHaveBeenCalledWith('Write Unit Tests');
 
-    const input = screen.getByTestId('todo-input');
-    const button = screen.getByTestId('add-button');
+  // Input should be cleared
+  expect(input.value).toBe('');
+});
 
-    fireEvent.change(input, { target: { value: 'Test Todo' } });
-    fireEvent.click(button);
+// Test to ensure no callback when submitting empty input
+test('does not call onAddTodo on empty submit', () => {
+  const mockAddTodo = jest.fn();
+  render(<AddTodoForm onAddTodo={mockAddTodo} />);
+  const addButton = screen.getByTestId('add-button');
 
-    expect(mockAddTodo).toHaveBeenCalledWith('Test Todo');
-    expect(input.value).toBe('');
-  });
+  // Click submit with empty input
+  fireEvent.click(addButton);
 
-  test('does not call onAddTodo when input is empty', () => {
-    const mockAddTodo = jest.fn();
-    render(<AddTodoForm onAddTodo={mockAddTodo} />);
-
-    const button = screen.getByTestId('add-button');
-    fireEvent.click(button);
-
-    expect(mockAddTodo).not.toHaveBeenCalled();
-  });
+  // Verify callback was not called
+  expect(mockAddTodo).not.toHaveBeenCalled();
 });
